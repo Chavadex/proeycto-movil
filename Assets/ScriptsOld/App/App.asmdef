@@ -1,0 +1,19 @@
+{
+    "name": "App",
+    "rootNamespace": "chava.app",
+    "references": [
+        "Zenject",
+        "Domain",
+        "Entities",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,21 @@
+{
+    "name": "View",
+    "rootNamespace": "chava.view",
+    "references": [
+        "GUID:b742a1bfe3256df46ba6711f6761a38e",
+        "GUID:be6aa7d767071394cb100f6c89e82979",
+        "GUID:bdc6dbf9d784b49428ef1fe05b0f123a",
+        "GUID:80342932cadf4934c9234869e1bfb2c9",
+        "GUID:99f79288ae040cb4bba3419cb8bfa3e1",
+        "GUID:50b5ec3cb0c9fc94bbc48216aaa19c34"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

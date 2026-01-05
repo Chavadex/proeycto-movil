@@ -1,0 +1,21 @@
+{
+    "name": "InterfaceAdapter",
+    "rootNamespace": "chava.interfaceadapter",
+    "references": [
+        "App",
+        "Domain",
+        "Entities",
+        "Shared",
+        "Utilities",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
