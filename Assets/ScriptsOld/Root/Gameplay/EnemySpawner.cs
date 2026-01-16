@@ -2,93 +2,86 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
+    [Header("Enemy Settings")]
     [SerializeField] private RedEnemyFlyweightSettings redEnemySettings;
     [SerializeField] private RedEnemyFlyweightSettings blueEnemySettings;
     [SerializeField] private RedEnemyFlyweightSettings greenEnemySettings;
 
+    [Header("Spawn Control")]
+    [SerializeField] private bool spawnRedEnemy = true;
+    [SerializeField] private bool spawnBlueEnemy = true;
+    [SerializeField] private bool spawnGreenEnemy = true;
+
+    [SerializeField] private Transform spawnPoint;
+
+    [Header("Spawn Limits")]
+    [SerializeField] private int maxEnemies = 20;
+    [SerializeField] private int currentEnemies = 0;
+
+    [Header("Cooldown")]
     [SerializeField] private float spawnCd = 1f;
-    [SerializeField] private Transform spawnPoint1;
-    [SerializeField] private Transform spawnPoint2;
-    [SerializeField] private Transform spawnPoint3;
-    private float currentCd = 0f;
+    private float currentCd;
 
     private void Update()
     {
-        if(currentCd <= 0)
+        if (currentEnemies >= maxEnemies)
+            return;
+
+        if (currentCd <= 0f)
         {
-            int enemySpawned = Random.Range(1, 4);
-
-            switch (enemySpawned)
-            {
-                case 1:
-                    var enemy = FlyweightFactory.Spawn(redEnemySettings);
-                    if (enemy == null) return;
-                    int randPos = Random.Range(1, 4);
-                    switch(randPos)
-                    {
-                        case 1:
-                            enemy.transform.position = spawnPoint1.position;
-                            break;
-                        case 2:
-                            enemy.transform.position = spawnPoint2.position;
-                            break;
-                        case 3:
-                            enemy.transform.position = spawnPoint3.position;
-                            break;
-                    }
-
-                    currentCd = spawnCd;
-
-
-                    break;
-                case 2:
-                    var enemy2 = FlyweightFactory.Spawn(blueEnemySettings);
-                    if (enemy2 == null) return;
-                    int randPos2 = Random.Range(1, 4);
-                    switch (randPos2)
-                    {
-                        case 1:
-                            enemy2.transform.position = spawnPoint1.position;
-                            break;
-                        case 2:
-                            enemy2.transform.position = spawnPoint2.position;
-                            break;
-                        case 3:
-                            enemy2.transform.position = spawnPoint3.position;
-                            break;
-                    }
-
-                    currentCd = spawnCd;
-                    break;
-                case 3:
-                    var enemy3 = FlyweightFactory.Spawn(greenEnemySettings);
-                    if (enemy3 == null) return;
-                    int randPos3 = Random.Range(1, 4);
-                    switch (randPos3)
-                    {
-                        case 1:
-                            enemy3.transform.position = spawnPoint1.position;
-                            break;
-                        case 2:
-                            enemy3.transform.position = spawnPoint2.position;
-                            break;
-                        case 3:
-                            enemy3.transform.position = spawnPoint3.position;
-                            break;
-                    }
-
-                    currentCd = spawnCd;
-
-
-                    break;
-            }
-            /*
-            var enemy = FlyweightFactory.Spawn(redEnemySettings);
-            if (enemy == null) return;
-            enemy.transform.position = spawnPoint1.position;
-            
-            currentCd = spawnCd;*/
+            TrySpawnEnemy();
+            currentCd = spawnCd;
         }
+
         currentCd -= Time.deltaTime;
+    }
+
+    // =========================
+    // SPAWN LOGIC
+    // =========================
+    private void TrySpawnEnemy()
+    {
+        RedEnemyFlyweightSettings selectedSettings = GetRandomAllowedEnemy();
+
+        if (selectedSettings == null)
+            return;
+
+        var enemy = FlyweightFactory.Spawn(selectedSettings);
+        if (enemy == null)
+            return;
+
+        enemy.transform.position = spawnPoint.position;
+        currentEnemies++;
+    }
+
+    // =========================
+    // ENEMY SELECTION
+    // =========================
+    private RedEnemyFlyweightSettings GetRandomAllowedEnemy()
+    {
+        var available = new System.Collections.Generic.List<RedEnemyFlyweightSettings>();
+
+        if (spawnRedEnemy && redEnemySettings != null)
+            available.Add(redEnemySettings);
+
+        if (spawnBlueEnemy && blueEnemySettings != null)
+            available.Add(blueEnemySettings);
+
+        if (spawnGreenEnemy && greenEnemySettings != null)
+            available.Add(greenEnemySettings);
+
+        if (available.Count == 0)
+            return null;
+
+        int index = Random.Range(0, available.Count);
+        return available[index];
+    }
+
+    // =========================
+    // PUBLIC API
+    // =========================
+    public void OnEnemyDeath()
+    {
+        currentEnemies--;
     }
 }

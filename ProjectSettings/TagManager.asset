@@ -11,6 +11,10 @@ TagManager:
   - FinishD
   - DeathZone
   - Laser
+  - MoveUp
+  - MoveDown
+  - MoveLeft
+  - MoveRight
   layers:
   - Default
   - TransparentFX

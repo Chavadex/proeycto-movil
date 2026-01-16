@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RedEnemyFlyweightSettings
   FType: 0
   prefab: {fileID: 249855015983635997, guid: 6ad593221b2aa104f92be694bf8e040b, type: 3}
-  <Speed>k__BackingField: 5
+  <MaxHealth>k__BackingField: 100
   <Damage>k__BackingField: 10
-  <Health>k__BackingField: 100
-  <visualPrefab>k__BackingField: {fileID: 5877772851283816321, guid: 690229f05c434d04eb83096e0ff62526, type: 3}
+  <Speed>k__BackingField: 5
+  visualPrefab: {fileID: 919132149155446097, guid: deecfcf4181ea4441bb366207cd49695, type: 3}
