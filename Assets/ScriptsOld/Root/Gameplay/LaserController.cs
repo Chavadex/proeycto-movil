@@ -5,6 +5,7 @@ using UnityEngine.Purchasing;
 
 public class LaserController : MonoBehaviour
 {
+    
     [Header("Variables del laser")]
     [SerializeField] float laserCooldown = 2f;
     [SerializeField] float laserDuration = 1f;
@@ -121,11 +122,13 @@ public class LaserController : MonoBehaviour
     {
         adsButton.SetActive(false);
     }
+    
     public void OnOrderPending(PendingOrder order)
     {
         Debug.Log("OnOrderPending: " + order.Info.PurchasedProductInfo[0].productId);
         switch (order.Info.PurchasedProductInfo[0].productId)
         {
+            
             case "iap_laser_upgrade":
                 Debug.Log("Se compro 10 laser");
                 addLaser();
@@ -144,6 +147,9 @@ public class LaserController : MonoBehaviour
                 addLaserAdsReward();
                 UpdateLaserUI();
                 disableAdsButton();
+                break;
+            case "Ejemplo":
+                Debug.Log("Compraste mil monedas");
                 break;
         }
     }

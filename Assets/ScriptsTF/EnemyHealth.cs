@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,9 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private Image healthBarContainer;
     [SerializeField] private Image healthBarFill;
 
-    void Start()
+    public event Action OnDeath;
+
+    void OnEnable()
     {
         currentHealth = maxHealth;
         UpdateHealthBar();
@@ -19,6 +22,9 @@ public class EnemyHealth : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        Debug.Log("Recibiendo dano de " + damage);
+        if (currentHealth <= 0) return;
+
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
 
@@ -26,10 +32,9 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0f)
         {
-            Die();
+            OnDeath?.Invoke();
         }
     }
-
 
     private void UpdateHealthBar()
     {
@@ -39,12 +44,10 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    private void Die()
+    public void ResetHealth(float newMaxHealth)
     {
-        // Aquí luego puedes:
-        // - Dar dinero
-        // - Avisar al GameManager
-        // - Spawnear partículas
-        Destroy(gameObject);
+        maxHealth = newMaxHealth;
+        currentHealth = maxHealth;
+        UpdateHealthBar();
     }
 }

@@ -55,7 +55,7 @@ public class PlayerAmmoInteraction : MonoBehaviour
     {
         if (!hasAmmo) return;
 
-        TowerAmmo towerAmmo = towerCollider.GetComponent<TowerAmmo>();
+        TowerAmmo towerAmmo = towerCollider.GetComponentInParent<TowerAmmo>();
         if (towerAmmo == null) return;
 
         towerAmmo.ChangeAmmoType(carriedAmmoType);

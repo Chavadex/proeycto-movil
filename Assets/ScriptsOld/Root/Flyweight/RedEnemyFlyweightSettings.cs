@@ -11,6 +11,8 @@ public class RedEnemyFlyweightSettings : FlyweightSettings
     [field: SerializeField] public int Damage { get; private set; } = 10;
     [field: SerializeField] public float Speed { get; private set; } = 2f;
 
+    [field: SerializeField] public int Coins { get; private set; } = 2;
+
     [Header("Prefabs")]
     [SerializeField] private GameObject visualPrefab;
 

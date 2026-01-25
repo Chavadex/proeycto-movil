@@ -17,6 +17,10 @@ public class ClickToMove : MonoBehaviour
         agent.speed = moveSpeed;
     }
 
+
+
+
+    
     void Update()
     {
         // Actualiza la velocidad por si la cambias en runtime
@@ -27,7 +31,7 @@ public class ClickToMove : MonoBehaviour
             MoveToClickPosition();
         }
     }
-
+    
     void MoveToClickPosition()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);

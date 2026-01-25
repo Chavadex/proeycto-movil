@@ -6,12 +6,11 @@ public class Projectile3D : MonoBehaviour
     [Header("Stats")]
     [SerializeField] private float speed = 10f;
     [SerializeField] private int damage = 1;
+    [SerializeField] private float wrongColorMultiplier = 0.25f;
 
     private AmmoType ammoType;
     private Transform target;
 
-
-    
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
@@ -23,7 +22,6 @@ public class Projectile3D : MonoBehaviour
     }
 
     // ================= MOVIMIENTO =================
-
     private void Update()
     {
         if (target == null)
@@ -38,44 +36,29 @@ public class Projectile3D : MonoBehaviour
     }
 
     // ================= IMPACTO =================
-
     private void OnTriggerEnter(Collider other)
     {
-        EnemyHealth enemy = other.GetComponentInParent<EnemyHealth>();
         if (target == null) return;
 
-        // Evita pegarle a otra cosa
+        // Solo colisiona con su target
         if (!other.transform.IsChildOf(target)) return;
 
-        if (!IsCorrectTarget(other.tag))
-        {
-            enemy.TakeDamage(damage * 0.25f);
+        EnemyHealth enemy = other.GetComponent<EnemyHealth>();
+        if (enemy == null) return;
 
-            Destroy(gameObject);
-            return;
-        }
+        float finalDamage = IsCorrectTarget(other.tag)
+            ? damage
+            : damage * wrongColorMultiplier;
 
-       // EnemyHealth enemy = other.GetComponentInParent<EnemyHealth>();
-        if (enemy != null)
-        {
-            enemy.TakeDamage(damage);
-        }
-
+        enemy.TakeDamage(finalDamage);
+        Debug.Log("Le diste");
         Destroy(gameObject);
     }
 
-
     // ================= COLOR LOGIC =================
-
     private bool IsCorrectTarget(string enemyTag)
     {
-        if (ammoType == AmmoType.Blue && enemyTag == "BlueEnemy")
-            return true;
-
-        if (ammoType == AmmoType.Red && enemyTag == "RedEnemy")
-            return true;
-
-        return false;
+        return (ammoType == AmmoType.Blue && enemyTag == "BlueEnemy") ||
+               (ammoType == AmmoType.Red && enemyTag == "RedEnemy");
     }
-
 }

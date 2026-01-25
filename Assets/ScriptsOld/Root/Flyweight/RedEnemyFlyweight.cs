@@ -3,8 +3,7 @@ using UnityEngine;
 public class RedEnemyFlyweight : Flyweight
 {
     private RedEnemyFlyweightSettings _settings;
-
-    private int _currentHealth;
+    private EnemyHealth _enemyHealth;
 
     private EnemyState _currentState;
     private Vector3 _moveDirection;
@@ -23,9 +22,20 @@ public class RedEnemyFlyweight : Flyweight
         if (_settings == null)
             _settings = (RedEnemyFlyweightSettings)flyweightSettings;
 
-        _currentHealth = _settings.MaxHealth;
+        _enemyHealth = GetComponent<EnemyHealth>();
 
-        SetState(EnemyState.MoveRight); // estado inicial
+        _enemyHealth.OnDeath -= OnDeath; // limpia antes
+        _enemyHealth.ResetHealth(_settings.MaxHealth);
+        _enemyHealth.OnDeath += OnDeath;
+
+        SetState(EnemyState.MoveRight);
+    }
+
+
+    private void OnDisable()
+    {
+        if (_enemyHealth != null)
+            _enemyHealth.OnDeath -= OnDeath;
     }
 
     private void Update()
@@ -38,19 +48,8 @@ public class RedEnemyFlyweight : Flyweight
     // =========================
     private void HandleState()
     {
-        switch (_currentState)
-        {
-            case EnemyState.MoveUp:
-            case EnemyState.MoveDown:
-            case EnemyState.MoveLeft:
-            case EnemyState.MoveRight:
-                Move();
-                break;
-
-            case EnemyState.Attacking:
-                // lógica de ataque luego
-                break;
-        }
+        if (_currentState != EnemyState.Attacking)
+            Move();
     }
 
     // =========================
@@ -65,28 +64,14 @@ public class RedEnemyFlyweight : Flyweight
     {
         _currentState = newState;
 
-        switch (newState)
+        _moveDirection = newState switch
         {
-            case EnemyState.MoveUp:
-                _moveDirection = Vector3.forward; // Z+
-                break;
-
-            case EnemyState.MoveDown:
-                _moveDirection = Vector3.back; // Z-
-                break;
-
-            case EnemyState.MoveLeft:
-                _moveDirection = Vector3.left; // X-
-                break;
-
-            case EnemyState.MoveRight:
-                _moveDirection = Vector3.right; // X+
-                break;
-
-            case EnemyState.Attacking:
-                _moveDirection = Vector3.zero;
-                break;
-        }
+            EnemyState.MoveUp => Vector3.forward,
+            EnemyState.MoveDown => Vector3.back,
+            EnemyState.MoveLeft => Vector3.left,
+            EnemyState.MoveRight => Vector3.right,
+            _ => Vector3.zero
+        };
     }
 
     // =========================
@@ -96,50 +81,39 @@ public class RedEnemyFlyweight : Flyweight
     {
         switch (other.tag)
         {
-            case "MoveUp":
-                SetState(EnemyState.MoveUp);
-                break;
-
-            case "MoveDown":
-                SetState(EnemyState.MoveDown);
-                break;
-
-            case "MoveLeft":
-                SetState(EnemyState.MoveLeft);
-                break;
-
-            case "MoveRight":
-                SetState(EnemyState.MoveRight);
-                break;
-
-            case "Attack":
-                SetState(EnemyState.Attacking);
-                break;
+            case "MoveUp": SetState(EnemyState.MoveUp); break;
+            case "MoveDown": SetState(EnemyState.MoveDown); break;
+            case "MoveLeft": SetState(EnemyState.MoveLeft); break;
+            case "MoveRight": SetState(EnemyState.MoveRight); break;
+            case "Attack": SetState(EnemyState.Attacking); break;
         }
     }
 
     // =========================
-    // DAMAGE / DEATH
+    // DEATH
     // =========================
-    public void TakeDamage(int damage)
+    private void OnDeath()
     {
-        _currentHealth -= damage;
+        Debug.Log("Evento Ondeath");
+        if (_settings == null)
+        {
+            Debug.LogError("RedEnemyFlyweight: Settings NULL en OnDeath");
+            FlyweightFactory.Release(this);
+            return;
+        }
 
-        if (_currentHealth <= 0)
-            OnDeath();
+        if (CoinManager.Instance != null)
+            CoinManager.Instance.AddCoins(_settings.Coins);
+
+        FindFirstObjectByType<EnemySpawner>()?.OnEnemyDeath();
+        FlyweightFactory.Release(this);
     }
+
 
     public int GetDamage()
     {
         return _settings.Damage;
     }
-
-    public void OnDeath()
-    {
-        FindFirstObjectByType<EnemySpawner>()?.OnEnemyDeath();
-        FlyweightFactory.Release(this);
-    }
-
 }
 
 
