@@ -12,6 +12,8 @@ public class Tower3DController : MonoBehaviour
     [SerializeField] private float fireCooldown = 1f;
     [SerializeField] private float rotationSpeed = 5f;
     [SerializeField] private TowerAmmo towerAmmo;
+    [SerializeField] private AudioSource BocinaTorreta;
+
 
     private float fireTimer;
     private Queue<Transform> enemyQueue = new Queue<Transform>();
@@ -75,6 +77,8 @@ public class Tower3DController : MonoBehaviour
         proj.SetAmmoType(towerAmmo.GetAmmoType());
 
         towerAmmo.ConsumeAmmo();
+        BocinaTorreta.PlayOneShot(towerAmmo.GetAmmoSound());
+
     }
 
 

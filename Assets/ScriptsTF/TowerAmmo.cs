@@ -24,6 +24,12 @@ public class TowerAmmo : MonoBehaviour
     [SerializeField] private Image imageAmmoBlue;
     [SerializeField] private Image imageAmmoGreen;
 
+    [Header("Ammo - Sound")]
+    [HideInInspector] public AudioClip AudioAmmo;
+    [SerializeField] private AudioClip AudioCanon;
+    [SerializeField] private AudioClip AudioArrow;
+    [SerializeField] private AudioClip AudioFireball;
+
     void Awake()
     {
         currentAmmo = maxAmmo;
@@ -80,18 +86,30 @@ public class TowerAmmo : MonoBehaviour
         switch (currentAmmoType)
         {
             case AmmoType.Red:
-                if (imageAmmoRed != null) imageAmmoRed.enabled = true;
+                if (imageAmmoRed != null)
+                    AudioAmmo = AudioFireball;
+                    imageAmmoRed.enabled = true;
                 break;
 
             case AmmoType.Blue:
-                if (imageAmmoBlue != null) imageAmmoBlue.enabled = true;
+                if (imageAmmoBlue != null) 
+                    imageAmmoBlue.enabled = true;
+                    AudioAmmo = AudioCanon;
                 break;
 
             case AmmoType.Green:
-                if (imageAmmoGreen != null) imageAmmoGreen.enabled = true;
+                if (imageAmmoGreen != null) 
+                    imageAmmoGreen.enabled = true;
+                    AudioAmmo = AudioArrow;
                 break;
         }
     }
+
+    public AudioClip GetAmmoSound()
+    {
+        return AudioAmmo;
+    }
+
 }
 
 
