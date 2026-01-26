@@ -178,7 +178,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 100
-  healthBarContainer: {fileID: 695186702114103116}
   healthBarFill: {fileID: 2114171326487382597}
 --- !u!1 &2719417396741121118
 GameObject:

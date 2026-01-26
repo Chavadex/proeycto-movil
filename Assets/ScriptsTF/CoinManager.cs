@@ -47,7 +47,7 @@ public class CoinManager : MonoBehaviour
         coins += amount;
         SaveCoins();
 
-        Debug.Log($"Monedas añadidas: {amount} | Total: {coins}");
+      //  Debug.Log($"Monedas añadidas: {amount} | Total: {coins}");
     }
 
     /// <summary>

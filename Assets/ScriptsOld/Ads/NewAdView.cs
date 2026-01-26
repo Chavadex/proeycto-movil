@@ -3,12 +3,14 @@ using UnityEngine;
 
 public class NewAdView : MonoBehaviour
 {
+    WaveManager _waveManager;
     [SerializeField] LaserController _laserController;
 
    // [SerializeField] private Score _score;
 
     private void Start()
     {
+        _waveManager = FindFirstObjectByType<WaveManager>();
       //  _score = FindFirstObjectByType<Score>();
     }
     public void ShowRewardAd()
@@ -29,8 +31,9 @@ public class NewAdView : MonoBehaviour
     {
         if (obj)
         {
-            Debug.Log("Reward the player");
-            _laserController.addOneLaser();
+            Debug.Log("Reseteamos la oleada");
+            _waveManager.RestartCurrentWave();
+            //_laserController.addOneLaser();
             //  _score.DuplicateScore();
         }
         else

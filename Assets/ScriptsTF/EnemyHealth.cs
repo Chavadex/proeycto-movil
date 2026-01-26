@@ -9,21 +9,33 @@ public class EnemyHealth : MonoBehaviour
     private float currentHealth;
 
     [Header("UI")]
-    [SerializeField] private Image healthBarContainer;
     [SerializeField] private Image healthBarFill;
+
+    public bool IsDead { get; private set; }
 
     public event Action OnDeath;
 
-    void OnEnable()
+    // =========================
+    // LIFECYCLE
+    // =========================
+    private void OnEnable()
     {
-        currentHealth = maxHealth;
-        UpdateHealthBar();
+        ResetHealth(maxHealth);
     }
 
+    private void OnDisable()
+    {
+        OnDeath = null;
+        IsDead = false;
+    }
+
+
+    // =========================
+    // DAMAGE
+    // =========================
     public void TakeDamage(float damage)
     {
-        Debug.Log("Recibiendo dano de " + damage);
-        if (currentHealth <= 0) return;
+        if (IsDead) return;
 
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
@@ -32,22 +44,38 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0f)
         {
-            OnDeath?.Invoke();
+            Die();
         }
     }
 
-    private void UpdateHealthBar()
+    // =========================
+    // DEATH
+    // =========================
+    private void Die()
     {
-        if (healthBarFill != null)
-        {
-            healthBarFill.fillAmount = currentHealth / maxHealth;
-        }
+        if (IsDead) return;
+
+        IsDead = true;
+        OnDeath?.Invoke();
     }
 
+    // =========================
+    // HEALTH RESET (Flyweight-friendly)
+    // =========================
     public void ResetHealth(float newMaxHealth)
     {
         maxHealth = newMaxHealth;
         currentHealth = maxHealth;
+        IsDead = false;
         UpdateHealthBar();
+    }
+
+    // =========================
+    // UI
+    // =========================
+    private void UpdateHealthBar()
+    {
+        if (healthBarFill != null)
+            healthBarFill.fillAmount = currentHealth / maxHealth;
     }
 }

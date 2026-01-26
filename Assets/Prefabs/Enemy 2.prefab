@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 8209931407392805414}
   m_Layer: 0
   m_Name: Enemy 2
-  m_TagString: BlueEnemy
+  m_TagString: GreenEnemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -178,7 +178,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 100
-  healthBarContainer: {fileID: 695186702114103116}
   healthBarFill: {fileID: 2114171326487382597}
 --- !u!1 &2719417396741121118
 GameObject:

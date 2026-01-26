@@ -20,15 +20,11 @@ public class Tower3DController : MonoBehaviour
 
     private void Update()
     {
+        CleanEnemyQueue();
+
         if (enemyQueue.Count == 0) return;
 
         Transform target = enemyQueue.Peek();
-
-        if (target == null)
-        {
-            enemyQueue.Dequeue();
-            return;
-        }
 
         RotateTowardsTarget(target);
 
@@ -40,9 +36,10 @@ public class Tower3DController : MonoBehaviour
         }
     }
 
+
     private bool IsEnemy(Collider other)
     {
-        return other.CompareTag("BlueEnemy") || other.CompareTag("RedEnemy");
+        return other.CompareTag("BlueEnemy") || other.CompareTag("RedEnemy") || other.CompareTag("GreenEnemy");
     }
 
     // ================= ROTACIÓN =================
@@ -61,6 +58,30 @@ public class Tower3DController : MonoBehaviour
     }
 
     // ================= DISPARO =================
+    private void CleanEnemyQueue()
+    {
+        while (enemyQueue.Count > 0)
+        {
+            Transform enemy = enemyQueue.Peek();
+
+            if (enemy == null)
+            {
+                enemyQueue.Dequeue();
+                continue;
+            }
+
+            EnemyHealth health = enemy.GetComponentInParent<EnemyHealth>();
+
+            if (health == null || health.IsDead)
+
+            {
+                enemyQueue.Dequeue();
+                continue;
+            }
+
+            break; // el primero es válido
+        }
+    }
 
     private void Fire(Transform target)
     {

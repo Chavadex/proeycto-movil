@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class RedEnemyFlyweight : Flyweight
 {
+    private EnemySpawner _cachedSpawner;
+
     private RedEnemyFlyweightSettings _settings;
     private EnemyHealth _enemyHealth;
 
@@ -29,6 +31,9 @@ public class RedEnemyFlyweight : Flyweight
         _enemyHealth.OnDeath += OnDeath;
 
         SetState(EnemyState.MoveRight);
+        if (_cachedSpawner == null)
+            _cachedSpawner = FindFirstObjectByType<EnemySpawner>();
+
     }
 
 
@@ -94,10 +99,10 @@ public class RedEnemyFlyweight : Flyweight
     // =========================
     private void OnDeath()
     {
-        Debug.Log("Evento Ondeath");
+        Debug.Log("Evento OnDeath");
+
         if (_settings == null)
         {
-            Debug.LogError("RedEnemyFlyweight: Settings NULL en OnDeath");
             FlyweightFactory.Release(this);
             return;
         }
@@ -105,9 +110,12 @@ public class RedEnemyFlyweight : Flyweight
         if (CoinManager.Instance != null)
             CoinManager.Instance.AddCoins(_settings.Coins);
 
-        FindFirstObjectByType<EnemySpawner>()?.OnEnemyDeath();
+        if (_cachedSpawner != null)
+            _cachedSpawner.OnEnemyDeath();
+
         FlyweightFactory.Release(this);
     }
+
 
 
     public int GetDamage()

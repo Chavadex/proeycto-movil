@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManagerTD : MonoBehaviour
 {
@@ -12,10 +13,14 @@ public class GameManagerTD : MonoBehaviour
     [SerializeField] GameObject BoxShopContainer;
     [SerializeField] GameObject CoinsShopContainer;
 
+    [SerializeField] bool hasDead;
+    WaveManager _waveManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        _waveManager = FindFirstObjectByType<WaveManager>();
+        hasDead = false;
         Time.timeScale = 1;
     }
 
@@ -34,13 +39,16 @@ public class GameManagerTD : MonoBehaviour
 
     public void DefeatedADS()
     {
-        Time.timeScale = 0;
+        
+        PausePanel.SetActive(true);
         DefeatADSContainer.SetActive(true);
+        hasDead = true;
     }
 
     public void DefeatedNOADS()
     {
         Time.timeScale = 0;
+        PausePanel.SetActive(true);
         DefeatNOADSContainer.SetActive(true);
     }
 
@@ -82,15 +90,30 @@ public class GameManagerTD : MonoBehaviour
         Time.timeScale = 1;
         PausePanel.SetActive(false);
         PauseContainer.SetActive(false);
+        DefeatADSContainer.SetActive(false);
+        DefeatNOADSContainer.SetActive(false);
     }
 
     public void Retry()
     {
-        //Recargar Escena
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        _waveManager.ResetWavesFromStart();
     }
 
     public void MainMenu()
     {
         //Menu principal
+    }
+
+    public void checkIfFirstDead()
+    {
+        if (!hasDead)
+        {
+            DefeatedADS();
+        }
+        else
+        {
+            DefeatedNOADS();
+        }
     }
 }
