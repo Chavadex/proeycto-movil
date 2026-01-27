@@ -306,11 +306,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3cc8f869a4eae4458a55ceb60a9c8b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tower3DController
-  turretHead: {fileID: 327189909179341959}
+  turretHead: {fileID: 1836375882393069251}
   firePoint: {fileID: 6582730077941912058}
   towerAmmo: {fileID: 6056078489276850248}
   fireCooldown: 1
   rotationSpeed: 5
+  recoilDuration: 0.15
 --- !u!135 &326870616110272174
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -544,3 +545,8 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 6.32, y: 2.74, z: 4.92}
   m_Center: {x: 0, y: 0.78374994, z: 0}
+--- !u!4 &1836375882393069251 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -7314745045437555281, guid: 5705419684c5e744ebce7ff6387a3c36, type: 3}
+  m_PrefabInstance: {fileID: 216401482009246572}
+  m_PrefabAsset: {fileID: 0}

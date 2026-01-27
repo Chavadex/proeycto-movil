@@ -16,3 +16,4 @@ MonoBehaviour:
   ammoSprite: {fileID: -1591459722, guid: 57bc5b535f0ce60468a42b473f2c9363, type: 3}
   shootSound: {fileID: 8300000, guid: 0561b38a991c2ed4e87887aaed1f25f9, type: 3}
   projectileSettings: {fileID: 11400000, guid: aca90ac9eb058b84bb4c165a7ffa0ce5, type: 2}
+  recoilStrength: 1

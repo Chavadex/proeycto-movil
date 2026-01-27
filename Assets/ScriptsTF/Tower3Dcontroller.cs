@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,8 +13,22 @@ public class Tower3DController : MonoBehaviour
     [SerializeField] private float fireCooldown = 1f;
     [SerializeField] private float rotationSpeed = 5f;
 
+    [Header("Visuals")]
+    [SerializeField] private float recoilDuration = 0.15f; // Qué tan rápido regresa a su sitio
+
     private float fireTimer;
     private Queue<Transform> enemyQueue = new Queue<Transform>();
+
+    // Variables para el retroceso
+    private Vector3 initialHeadLocalPos;
+    private Coroutine recoilCoroutine;
+
+    private void Start()
+    {
+        // Guardamos la posición original de la cabeza (relativa al padre)
+        if (turretHead != null)
+            initialHeadLocalPos = turretHead.localPosition;
+    }
 
     private void Update()
     {
@@ -46,7 +61,41 @@ public class Tower3DController : MonoBehaviour
         if (!towerAmmo.HasAmmo()) return;
 
         towerAmmo.Fire(firePoint, target);
+
+        // --- ACTIVAMOS EL RETROCESO ---
+        // Obtenemos la fuerza de la munición actual
+        float kickStrength = towerAmmo.GetCurrentRecoil();
+
+        // Si ya hay un retroceso ocurriendo, lo paramos para iniciar uno nuevo
+        if (recoilCoroutine != null) StopCoroutine(recoilCoroutine);
+
+        recoilCoroutine = StartCoroutine(RecoilRoutine(kickStrength));
     }
+
+    // --- CORRUTINA DE RETROCESO ---
+    private IEnumerator RecoilRoutine(float strength)
+    {
+        // 1. Fase de Empuje (Kick): Instantáneo hacia atrás
+        // "Vector3.back" asume que la torreta apunta hacia Z positivo.
+        // Si tu torreta se mueve raro, intenta con -Vector3.forward o Vector3.down según tu modelo.
+        Vector3 recoilTargetPos = initialHeadLocalPos + (Vector3.forward * strength);
+
+        turretHead.localPosition = recoilTargetPos;
+
+        // 2. Fase de Recuperación: Regresar suavemente
+        float elapsed = 0f;
+        while (elapsed < recoilDuration)
+        {
+            turretHead.localPosition = Vector3.Lerp(recoilTargetPos, initialHeadLocalPos, elapsed / recoilDuration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        // Aseguramos que quede exactamente en su lugar
+        turretHead.localPosition = initialHeadLocalPos;
+    }
+
+    // ... (El resto de tus métodos CleanEnemyQueue, IsEnemy, Triggers siguen igual) ...
 
     private void CleanEnemyQueue()
     {

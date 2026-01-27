@@ -179,6 +179,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 100
   healthBarFill: {fileID: 2114171326487382597}
+  flashDuration: 0.5
+  damageColor: {r: 1, g: 0.6446169, b: 0, a: 1}
+  enemyRenderer: {fileID: 649255058927720247}
 --- !u!1 &2719417396741121118
 GameObject:
   m_ObjectHideFlags: 0
@@ -321,7 +324,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6beaabe85e5b9b844bb009d4724faa9e, type: 2}
+  - {fileID: 2100000, guid: 503f6d6a91647c347b952a445aca22ee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

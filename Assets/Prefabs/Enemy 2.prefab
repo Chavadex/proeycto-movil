@@ -179,6 +179,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 100
   healthBarFill: {fileID: 2114171326487382597}
+  flashDuration: 0.5
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  enemyRenderer: {fileID: 649255058927720247}
 --- !u!1 &2719417396741121118
 GameObject:
   m_ObjectHideFlags: 0
@@ -281,13 +284,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3863907468702495872}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: 0.7628876, z: -0, w: 0.6465311}
   m_LocalPosition: {x: -0.14, y: 0.703, z: 0}
   m_LocalScale: {x: 0.75251, y: 0.75251, z: 0.75251}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2678685347379134117}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 99.439, z: 0}
 --- !u!33 &8279020203998973546
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -321,7 +324,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 288100fbd3fa8704c950cb8ae6bb54b3, type: 2}
+  - {fileID: 2100000, guid: 503f6d6a91647c347b952a445aca22ee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -7,6 +7,7 @@ public interface ITowerAttackStrategy
 
     Sprite AmmoSprite { get; }
 
+    float RecoilStrength { get; }
     AudioClip ShootSound { get; }
     void Fire(Transform spawnPoint, Transform target);
 }
