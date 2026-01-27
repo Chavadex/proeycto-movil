@@ -35,6 +35,11 @@ public class MainMenuPresenter : MonoBehaviour
         uiView.ShowCredits();
     }
 
+    public void OnCreditsHide()
+    {
+        uiView.HideCredits();
+    }
+
     public void OnBackToMainPressed()
     {
         uiView.ShowMainPanel();

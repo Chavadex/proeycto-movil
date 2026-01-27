@@ -30,6 +30,12 @@ public class MainMenuView : MonoBehaviour
         if (creditsContainer) creditsContainer.SetActive(true);
     }
 
+    public void HideCredits()
+    {
+        mainContainer.SetActive(true);
+        if (creditsContainer) creditsContainer.SetActive(false);
+    }
+
     public void UpdateCoinsText(int coins)
     {
         if (totalCoinsText != null)
