@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 
 public class ClickToMove : MonoBehaviour
 {
@@ -29,6 +30,8 @@ public class ClickToMove : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
             MoveToClickPosition();
         }
     }
