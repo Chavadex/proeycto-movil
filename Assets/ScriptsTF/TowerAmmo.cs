@@ -1,115 +1,109 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TowerAmmo : MonoBehaviour
 {
-    public enum AmmoType
-    {
-        Red,
-        Blue,
-        Green
-    }
+    public enum AmmoType { Red, Blue, Green }
+
+    [Header("Strategies")]
+    [SerializeField] private List<TowerAttackStrategySO> strategies;
+
+    private Dictionary<AmmoType, ITowerAttackStrategy> _strategyMap;
+    private ITowerAttackStrategy _currentStrategy;
 
     [Header("Ammo Settings")]
-    [SerializeField] private AmmoType currentAmmoType;
     [SerializeField] private int maxAmmo = 20;
-    [SerializeField] private int currentAmmo;
+    private int currentAmmo;
 
-    [Header("Ammo UI - Text")]
+    [Header("UI")]
     [SerializeField] private TextMeshProUGUI currentAmmoText;
 
-    [Header("Ammo UI - Images")]
-    [SerializeField] private Image imageAmmoRed;
-    [SerializeField] private Image imageAmmoBlue;
-    [SerializeField] private Image imageAmmoGreen;
+    [SerializeField] private Image ammoIconDisplay;
 
-    [Header("Ammo - Sound")]
-    [HideInInspector] public AudioClip AudioAmmo;
-    [SerializeField] private AudioClip AudioCanon;
-    [SerializeField] private AudioClip AudioArrow;
-    [SerializeField] private AudioClip AudioFireball;
+    private AudioSource _audioSource;
 
-    void Awake()
+    private void Awake()
     {
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null) _audioSource = gameObject.AddComponent<AudioSource>();
+
+        InitializeStrategies();
+
         currentAmmo = maxAmmo;
-        UpdateAmmoText();
-        UpdateAmmoImages();
+        ChangeAmmoType(AmmoType.Red);
     }
 
-    // ================= GETTERS =================
-
-    public AmmoType GetAmmoType() => currentAmmoType;
-    public int GetCurrentAmmo() => currentAmmo;
-    public bool HasAmmo() => currentAmmo > 0;
-
-    // ================= USO =================
-
-    public void ConsumeAmmo(int amount = 1)
+    private void InitializeStrategies()
     {
-        currentAmmo -= amount;
-        currentAmmo = Mathf.Clamp(currentAmmo, 0, maxAmmo);
-        UpdateAmmoText();
+        _strategyMap = new Dictionary<AmmoType, ITowerAttackStrategy>();
+        foreach (var strat in strategies)
+        {
+            if (!_strategyMap.ContainsKey(strat.Type))
+            {
+                _strategyMap.Add(strat.Type, strat);
+            }
+        }
     }
 
-    // ================= PLAYER ACTIONS =================
-
-    public void Reload()
+    public void Fire(Transform firePoint, Transform target)
     {
-        Debug.Log("Ya recargada");
-        currentAmmo = maxAmmo;
-        UpdateAmmoText();
+        if (currentAmmo <= 0) return;
+
+        _currentStrategy.Fire(firePoint, target);
+
+        if (_currentStrategy.ShootSound != null)
+            _audioSource.PlayOneShot(_currentStrategy.ShootSound);
+
+        ConsumeAmmo();
     }
 
     public void ChangeAmmoType(AmmoType newType)
     {
-        currentAmmoType = newType;
-        UpdateAmmoImages();
+        if (_strategyMap.ContainsKey(newType))
+        {
+            _currentStrategy = _strategyMap[newType];
+            UpdateUI();
+        }
+        else
+        {
+            Debug.LogError($"No se encontró estrategia para {newType}");
+        }
     }
 
-    // ================= UI =================
+    public void Reload()
+    {
+        currentAmmo = maxAmmo;
+        UpdateUI();
+    }
 
-    private void UpdateAmmoText()
+    public bool HasAmmo() => currentAmmo > 0;
+    public AmmoType GetAmmoType() => _currentStrategy.Type;
+    public AudioClip GetAmmoSound() => _currentStrategy.ShootSound;
+
+
+    private void ConsumeAmmo()
+    {
+        currentAmmo--;
+        UpdateUI();
+    }
+
+    private void UpdateUI()
     {
         if (currentAmmoText != null)
-        {
             currentAmmoText.text = $"{currentAmmo}/{maxAmmo}";
-        }
-    }
 
-    private void UpdateAmmoImages()
-    {
-        if (imageAmmoRed != null) imageAmmoRed.enabled = false;
-        if (imageAmmoBlue != null) imageAmmoBlue.enabled = false;
-        if (imageAmmoGreen != null) imageAmmoGreen.enabled = false;
-
-        switch (currentAmmoType)
+        if (ammoIconDisplay != null)
         {
-            case AmmoType.Red:
-                if (imageAmmoRed != null)
-                    AudioAmmo = AudioFireball;
-                    imageAmmoRed.enabled = true;
-                break;
+            ammoIconDisplay.enabled = currentAmmo > 0;
 
-            case AmmoType.Blue:
-                if (imageAmmoBlue != null) 
-                    imageAmmoBlue.enabled = true;
-                    AudioAmmo = AudioCanon;
-                break;
+            if (_currentStrategy != null && _currentStrategy.AmmoSprite != null)
+            {
+                ammoIconDisplay.sprite = _currentStrategy.AmmoSprite;
 
-            case AmmoType.Green:
-                if (imageAmmoGreen != null) 
-                    imageAmmoGreen.enabled = true;
-                    AudioAmmo = AudioArrow;
-                break;
+                ammoIconDisplay.color = Color.white;
+            }
         }
     }
-
-    public AudioClip GetAmmoSound()
-    {
-        return AudioAmmo;
-    }
-
 }
-
-

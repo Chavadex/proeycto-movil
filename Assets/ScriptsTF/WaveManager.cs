@@ -24,24 +24,17 @@ public class WaveManager : MonoBehaviour
 
     private bool isWaitingNextWave;
 
-    private const string WAVE_KEY = "CURRENT_WAVE";
 
     private void Start()
     {
         _gameManager = FindFirstObjectByType<GameManagerTD>();
         _castleHealth = FindFirstObjectByType<CastleHealth>();
-        StartCoroutine(StartFirstWave());
-       // LoadWave();
-        //StartWave();
-    }
 
-    // =========================
-    // WAVE FLOW
-    // =========================
+        StartCoroutine(StartFirstWave());
+    }
 
     private void StartWave()
     {
-
         isWaitingNextWave = false;
 
         enemiesToSpawn = startingEnemies + (currentWave * enemiesIncrement);
@@ -74,40 +67,32 @@ public class WaveManager : MonoBehaviour
         StartWave();
     }
 
-    // =========================
-    // UI
-    // =========================
-
     private void UpdateWaveUI()
     {
-        Debug.Log("Actualizando wave");
         if (waveText != null)
             waveText.text = $"{currentWave + 1}";
     }
 
-    // =========================
-    // SAVE / LOAD
-    // =========================
-
     private void SaveWave()
     {
-        PlayerPrefs.SetInt(WAVE_KEY, currentWave);
-        PlayerPrefs.Save();
+
+        if (GameRepository.Instance != null)
+        {
+            GameRepository.Instance.SaveWave(currentWave);
+        }
     }
 
     private void LoadWave()
     {
-        currentWave = PlayerPrefs.GetInt(WAVE_KEY, 0);
+        if (GameRepository.Instance != null)
+        {
+            currentWave = GameRepository.Instance.LoadWave();
+        }
     }
-
-    // =========================
-    // RETRY / RESTART
-    // =========================
 
     public void RestartCurrentWave()
     {
         StartCoroutine(RestartWaveRoutine());
-        
     }
 
     private IEnumerator RestartWaveRoutine()
@@ -124,8 +109,11 @@ public class WaveManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(timeBetweenWaves);
 
         isWaitingNextWave = false;
+
         StartWave();
-        _castleHealth.RestoreHealth();
+
+        if (_castleHealth != null)
+            _castleHealth.RestoreHealth();
     }
 
     public void ResetWavesFromStart()
@@ -133,36 +121,26 @@ public class WaveManager : MonoBehaviour
         Debug.Log("Reiniciando oleadas desde el inicio");
 
         StopAllCoroutines();
-
         isWaitingNextWave = false;
 
-        // Reset datos
         currentWave = 0;
         SaveWave();
 
-        // Detener y limpiar enemigos
         enemySpawner.StopSpawning();
         enemySpawner.ClearEnemies();
 
-        // Reset castillo
         if (_castleHealth != null)
             _castleHealth.RestoreHealth();
 
-        // Actualizar UI
         UpdateWaveUI();
 
-        // Iniciar primera oleada con delay normal
-//        StartCoroutine(ResetAndStartRoutine());
     }
 
     private IEnumerator StartFirstWave()
     {
-        yield return new WaitForSecondsRealtime(10);
-        LoadWave();
+        yield return new WaitForSecondsRealtime(2f);
+
+        LoadWave(); 
         StartWave();
     }
-
-
-
-
 }

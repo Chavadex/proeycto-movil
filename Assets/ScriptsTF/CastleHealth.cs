@@ -1,10 +1,11 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CastleHealth : MonoBehaviour
 {
-    GameManagerTD _GameManager;
+    private GameManagerTD _GameManager;
+    private WaveManager _waveManager;
+
     [Header("Health")]
     [SerializeField] private float maxHealth = 100f;
     private float currentHealth;
@@ -15,6 +16,9 @@ public class CastleHealth : MonoBehaviour
     private void Start()
     {
         _GameManager = FindFirstObjectByType<GameManagerTD>();
+
+        _waveManager = FindFirstObjectByType<WaveManager>();
+
         currentHealth = maxHealth;
         UpdateUI();
     }
@@ -29,10 +33,17 @@ public class CastleHealth : MonoBehaviour
             return;
 
         RedEnemyFlyweight enemy = other.GetComponent<RedEnemyFlyweight>();
+
         if (enemy == null)
             return;
 
         TakeDamage(enemy.GetDamage());
+
+        if (_waveManager != null)
+        {
+            _waveManager.OnEnemyKilled();
+        }
+
         FlyweightFactory.Release(enemy);
     }
 
@@ -57,12 +68,11 @@ public class CastleHealth : MonoBehaviour
     private void OnCastleDestroyed()
     {
         Debug.Log("El castillo fue destruido ");
-        _GameManager.checkIfFirstDead();
+
+        if (_GameManager != null)
+            _GameManager.CheckIfFirstDead();
+
         GetComponent<BoxCollider>().enabled = false;
-        // Aquí luego puedes:
-        // - terminar partida
-        // - mostrar UI de derrota
-        // - pausar el juego
     }
 
     public void RestoreHealth()

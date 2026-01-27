@@ -1,64 +1,79 @@
 using UnityEngine;
 using static TowerAmmo;
 
-public class Projectile3D : MonoBehaviour
+public class Projectile3D : Flyweight
 {
-    [Header("Stats")]
-    [SerializeField] private float speed = 10f;
-    [SerializeField] private int damage = 1;
-    [SerializeField] private float wrongColorMultiplier = 0.25f;
+    private ProjectileFlyweightSettings _settings;
+    private Transform _target;
+    private float _wrongColorMultiplier = 0.25f;
 
-    private AmmoType ammoType;
-    private Transform target;
-
-    public void SetTarget(Transform newTarget)
+    private void OnEnable()
     {
-        target = newTarget;
+        Invoke(nameof(ReturnToPool), 5f);
     }
 
-    public void SetAmmoType(AmmoType type)
+    private void OnDisable()
     {
-        ammoType = type;
+        CancelInvoke();
     }
 
-    // ================= MOVIMIENTO =================
+    public void Initialize(Transform newTarget)
+    {
+        if (_settings == null)
+        {
+            _settings = (ProjectileFlyweightSettings)flyweightSettings;
+        }
+
+        _target = newTarget;
+    }
+
     private void Update()
     {
-        if (target == null)
+        if (_settings == null) return;
+
+        if (_target == null || !_target.gameObject.activeInHierarchy)
         {
-            Destroy(gameObject);
+            ReturnToPool();
             return;
         }
 
-        Vector3 direction = (target.position - transform.position).normalized;
-        transform.position += direction * speed * Time.deltaTime;
+        Vector3 direction = (_target.position - transform.position).normalized;
+
+        transform.position += direction * _settings.Speed * Time.deltaTime;
         transform.forward = direction;
     }
 
-    // ================= IMPACTO =================
     private void OnTriggerEnter(Collider other)
     {
-        if (target == null) return;
+        if (_target == null || _settings == null) return;
 
-        // Solo colisiona con su target
-        if (!other.transform.IsChildOf(target)) return;
+        if (!other.transform.IsChildOf(_target) && other.transform != _target) return;
 
         EnemyHealth enemy = other.GetComponent<EnemyHealth>();
-        if (enemy == null) return;
+        if (enemy != null)
+        {
+            float finalDamage = IsCorrectTarget(other.tag)
+                ? _settings.Damage
+                : _settings.Damage * _wrongColorMultiplier;
 
-        float finalDamage = IsCorrectTarget(other.tag)
-            ? damage
-            : damage * wrongColorMultiplier;
+            enemy.TakeDamage(finalDamage);
+        }
 
-        enemy.TakeDamage(finalDamage);
-        Debug.Log("Le diste");
-        Destroy(gameObject);
+        ReturnToPool();
     }
 
-    // ================= COLOR LOGIC =================
     private bool IsCorrectTarget(string enemyTag)
     {
-        return (ammoType == AmmoType.Blue && enemyTag == "BlueEnemy") ||
-               (ammoType == AmmoType.Red && enemyTag == "RedEnemy");
+        if (_settings == null) return false;
+
+        AmmoType type = _settings.AmmoColor;
+        return (type == AmmoType.Blue && enemyTag == "BlueEnemy") ||
+               (type == AmmoType.Red && enemyTag == "RedEnemy") ||
+               (type == AmmoType.Green && enemyTag == "GreenEnemy");
+    }
+
+    private void ReturnToPool()
+    {
+        FlyweightFactory.Release(this);
     }
 }

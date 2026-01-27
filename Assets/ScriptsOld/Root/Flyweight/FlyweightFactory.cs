@@ -11,7 +11,7 @@ public class FlyweightFactory : MonoBehaviour
     [SerializeField] private int _MaxCapacity = 50;
 
     private Dictionary<FlyweightType, IObjectPool<Flyweight>> _objectPools = new();
-    private HashSet<Flyweight> _activeFlyweights = new(); //  NUEVO
+    private HashSet<Flyweight> _activeFlyweights = new();
 
     public static Flyweight Spawn(FlyweightSettings settings)
     {
@@ -61,9 +61,6 @@ public class FlyweightFactory : MonoBehaviour
         return pool;
     }
 
-    // =========================
-    // CLEAR ALL (WAVES / RETRY)
-    // =========================
     public static void ClearAll()
     {
         var copy = new List<Flyweight>(Instance._activeFlyweights);
@@ -76,56 +73,21 @@ public class FlyweightFactory : MonoBehaviour
         Instance._activeFlyweights.Clear();
         Debug.Log("FlyweightFactory: Todos los enemigos limpiados");
     }
-}
 
-
-/*
- * using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Pool;
-
-public class FlyweightFactory : MonoBehaviour
-{
-    public static FlyweightFactory Instance { get; private set; }
-    [SerializeField] private bool _collectionCheck = true;
-    [SerializeField] private int _defaultCapacity = 10;
-    [SerializeField] private int _MaxCapacity = 50;
-    private Dictionary<FlyweightType, IObjectPool<Flyweight>> _objectPools = new();
-
-    public static Flyweight Spawn(FlyweightSettings flyweightSettings) => Instance.GetPool(flyweightSettings)?.Get();
-    public static void Release(Flyweight flyweight) => Instance.GetPool(flyweight.flyweightSettings)?.Release(flyweight);
-
-    private void Awake()
+    public static void NukeEnemies()
     {
-        if (Instance == null)
+        var activeEnemies = new List<Flyweight>(Instance._activeFlyweights);
+
+        foreach (var fw in activeEnemies)
         {
-            Instance = this;
+            var health = fw.GetComponent<EnemyHealth>();
+            if (health != null && !health.IsDead)
+            {
+
+                health.TakeDamage(99999f);
+            }
         }
-        else
-        {
-            Destroy(this);
-        }
+        Debug.Log("NUKE: Todos los enemigos eliminados.");
     }
 
-    private IObjectPool<Flyweight> GetPool(FlyweightSettings flyweightsettings)
-    {
-        if (_objectPools.TryGetValue(flyweightsettings.FType, out var pool))
-        {
-            return pool;
-        }
-        pool = new ObjectPool<Flyweight>(
-            flyweightsettings.Create,
-            flyweightsettings.OnGet,
-            flyweightsettings.OnRealise,
-            flyweightsettings.OnDispose,
-            _collectionCheck,
-            _defaultCapacity,
-            _MaxCapacity);
-
-        _objectPools.Add(flyweightsettings.FType, pool);
-
-        return pool;
-    }
 }
-
-*/

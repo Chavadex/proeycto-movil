@@ -15,24 +15,12 @@ public class EnemyHealth : MonoBehaviour
 
     public event Action OnDeath;
 
-    // =========================
-    // LIFECYCLE
-    // =========================
-    private void OnEnable()
-    {
-        ResetHealth(maxHealth);
-    }
-
     private void OnDisable()
     {
         OnDeath = null;
         IsDead = false;
     }
 
-
-    // =========================
-    // DAMAGE
-    // =========================
     public void TakeDamage(float damage)
     {
         if (IsDead) return;
@@ -48,9 +36,6 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    // =========================
-    // DEATH
-    // =========================
     private void Die()
     {
         if (IsDead) return;
@@ -59,9 +44,6 @@ public class EnemyHealth : MonoBehaviour
         OnDeath?.Invoke();
     }
 
-    // =========================
-    // HEALTH RESET (Flyweight-friendly)
-    // =========================
     public void ResetHealth(float newMaxHealth)
     {
         maxHealth = newMaxHealth;
@@ -69,10 +51,6 @@ public class EnemyHealth : MonoBehaviour
         IsDead = false;
         UpdateHealthBar();
     }
-
-    // =========================
-    // UI
-    // =========================
     private void UpdateHealthBar()
     {
         if (healthBarFill != null)

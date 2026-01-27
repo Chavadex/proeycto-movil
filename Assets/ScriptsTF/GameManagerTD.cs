@@ -1,113 +1,48 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GameManagerTD : MonoBehaviour
 {
+    [Header("Presentation")]
+    [SerializeField] private GameUIView uiView;
 
-    [SerializeField] GameObject PausePanel;
-    [SerializeField] GameObject PauseContainer;
-    [SerializeField] GameObject DefeatADSContainer;
-    [SerializeField] GameObject DefeatNOADSContainer;
-    [SerializeField] GameObject ShopContainer;
-    [SerializeField] GameObject BoxShopContainer;
-    [SerializeField] GameObject CoinsShopContainer;
+    private GameViewModel _viewModel;
 
-    [SerializeField] bool hasDead;
-    WaveManager _waveManager;
+    private WaveManager _waveManager;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _waveManager = FindFirstObjectByType<WaveManager>();
-        hasDead = false;
-        Time.timeScale = 1;
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        _viewModel = new GameViewModel();
+
+        Time.timeScale = 1;
+
+        if (uiView != null) uiView.HideAllPopups();
     }
 
     public void PauseGame()
     {
+        _viewModel.SetPauseState(true);
+
         Time.timeScale = 0;
-        PausePanel.SetActive(true);
-        PauseContainer.SetActive(true);
-    }
 
-    public void DefeatedADS()
-    {
-        
-        PausePanel.SetActive(true);
-        DefeatADSContainer.SetActive(true);
-        hasDead = true;
-    }
-
-    public void DefeatedNOADS()
-    {
-        Time.timeScale = 0;
-        PausePanel.SetActive(true);
-        DefeatNOADSContainer.SetActive(true);
-    }
-
-    public void OpenShop()
-    {
-        
-        ShopContainer.SetActive(true);
-    }
-
-    public void OpenBoxShop()
-    {
-        BoxShopContainer.SetActive(true);
-    }
-
-    public void OpenCoinsShop()
-    {
-        CoinsShopContainer.SetActive(true);
-
-    }
-
-    public void BackFromCoinShop()
-    {
-        CoinsShopContainer.SetActive(false);
-
-    }
-    public void BackFromBOXShop()
-    {
-        BoxShopContainer.SetActive(false);
-
-    }
-
-    public void BackFromShop()
-    {
-        ShopContainer.SetActive(false);
+        uiView.TogglePauseUI(true);
     }
 
     public void Resume()
     {
+        _viewModel.SetPauseState(false);
+
         Time.timeScale = 1;
-        PausePanel.SetActive(false);
-        PauseContainer.SetActive(false);
-        DefeatADSContainer.SetActive(false);
-        DefeatNOADSContainer.SetActive(false);
+
+        uiView.TogglePauseUI(false);
+        uiView.HideAllPopups();
     }
 
-    public void Retry()
+    public void CheckIfFirstDead()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        _waveManager.ResetWavesFromStart();
-    }
-
-    public void MainMenu()
-    {
-        //Menu principal
-    }
-
-    public void checkIfFirstDead()
-    {
-        if (!hasDead)
+        if (!_viewModel.HasDead)
         {
             DefeatedADS();
         }
@@ -115,5 +50,43 @@ public class GameManagerTD : MonoBehaviour
         {
             DefeatedNOADS();
         }
+    }
+
+    private void DefeatedADS()
+    {
+        _viewModel.SetDeadState(true);
+
+        uiView.ShowDefeatAds();
+    }
+
+    private void DefeatedNOADS()
+    {
+        Time.timeScale = 0;
+
+        uiView.ShowDefeatNoAds();
+    }
+
+
+    public void OpenShop() => uiView.ShowShop(true);
+    public void BackFromShop() => uiView.ShowShop(false);
+
+    public void OpenBoxShop() => uiView.ShowBoxShop(true);
+    public void BackFromBOXShop() => uiView.ShowBoxShop(false);
+
+    public void OpenCoinsShop() => uiView.ShowCoinsShop(true);
+    public void BackFromCoinShop() => uiView.ShowCoinsShop(false);
+
+
+    public void Retry()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        if (_waveManager != null) _waveManager.ResetWavesFromStart();
+    }
+
+    public void MainMenu()
+    {
+         SceneManager.LoadScene("MainMenu");
     }
 }

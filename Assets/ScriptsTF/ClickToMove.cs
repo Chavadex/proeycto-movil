@@ -4,7 +4,7 @@ using UnityEngine.AI;
 public class ClickToMove : MonoBehaviour
 {
     [Header("Movement")]
-    public float moveSpeed = 5f;
+    public float moveSpeed = 6f;
 
     private NavMeshAgent agent;
     private Camera mainCamera;
@@ -15,23 +15,24 @@ public class ClickToMove : MonoBehaviour
         mainCamera = Camera.main;
 
         agent.speed = moveSpeed;
+
+        agent.acceleration = 60f;
+
+        agent.angularSpeed = 720f;
+
+        agent.autoBraking = true;
     }
 
-
-
-
-    
     void Update()
     {
-        // Actualiza la velocidad por si la cambias en runtime
         agent.speed = moveSpeed;
 
-        if (Input.GetMouseButtonDown(0)) // Click o Touch
+        if (Input.GetMouseButtonDown(0))
         {
             MoveToClickPosition();
         }
     }
-    
+
     void MoveToClickPosition()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);

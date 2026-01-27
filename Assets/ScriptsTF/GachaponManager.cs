@@ -6,23 +6,27 @@ using TMPro;
 public class GachaponManager : MonoBehaviour
 {
     [System.Serializable]
-   
-
     public class GachaReward
     {
-        public string rewardName;
+        public string rewardName; 
         [Range(0f, 100f)] public float probability;
     }
-
-    private const string GACHA_KEY_PREFIX = "GACHA_REWARD_";
 
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI rewardText;
 
-    [Header("Gacha Cost")]
+    [Header("Gacha Costs")]
     [SerializeField] private int gachaCost = 50;
 
-    [Header("Rewards")]
+    [Header("PowerUp Rewards Settings")]
+    [SerializeField] private int powerUpQuantity = 3; 
+    [SerializeField] private int maxInventoryLimit = 10;
+    [SerializeField] private int compensationCoins = 150; 
+
+    [Header("Consolation Prize Settings")]
+    [SerializeField] private int coinsPrizeAmount = 200;
+
+    [Header("Rewards Config")]
     [SerializeField] private List<GachaReward> rewards = new List<GachaReward>();
 
     [Header("Spin Settings")]
@@ -31,16 +35,6 @@ public class GachaponManager : MonoBehaviour
 
     private bool isSpinning = false;
 
-    // =========================
-    // BUTTON CALL
-    // ========================
-    //
-    // =
-
-    private void Start()
-    {
-        ResetGachaponData();
-    }
     public void StartGachapon()
     {
         if (isSpinning) return;
@@ -55,43 +49,52 @@ public class GachaponManager : MonoBehaviour
         StartCoroutine(SpinRoutine());
     }
 
-    // =========================
-    // SPIN
-    // =========================
     private IEnumerator SpinRoutine()
     {
         isSpinning = true;
-
         float timer = 0f;
 
         while (timer < spinDuration)
         {
             rewardText.text = rewards[Random.Range(0, rewards.Count)].rewardName;
-
             timer += spinSpeed;
             yield return new WaitForSecondsRealtime(spinSpeed);
         }
 
         GachaReward finalReward = GetRandomRewardByProbability();
-        rewardText.text = finalReward.rewardName;
 
-        ExecuteReward(finalReward.rewardName);
-
-
+        ProcessReward(finalReward.rewardName);
 
         isSpinning = false;
     }
 
+    private void ProcessReward(string rewardName)
+    {
+        if (rewardName == "Monedas")
+        {
+            CoinManager.Instance.AddCoins(coinsPrizeAmount);
+            rewardText.text = $"¡GANASTE!\n+{coinsPrizeAmount} Monedas";
+            return; 
+        }
 
-    // =========================
-    // PROBABILITY LOGIC
-    // =========================
+        int currentAmount = PowerUpManager.Instance.GetPowerUpCount(rewardName);
+
+        if (currentAmount >= maxInventoryLimit)
+        {
+            CoinManager.Instance.AddCoins(compensationCoins);
+            rewardText.text = $"{rewardName} (LLENO)\n+{compensationCoins} Monedas";
+        }
+        else
+        {
+            PowerUpManager.Instance.AddPowerUp(rewardName, powerUpQuantity);
+            rewardText.text = $"¡GANASTE!\n+{powerUpQuantity} {rewardName}";
+        }
+    }
+
     private GachaReward GetRandomRewardByProbability()
     {
         float totalProbability = 0f;
-
-        foreach (var reward in rewards)
-            totalProbability += reward.probability;
+        foreach (var reward in rewards) totalProbability += reward.probability;
 
         float randomValue = Random.Range(0f, totalProbability);
         float current = 0f;
@@ -99,98 +102,9 @@ public class GachaponManager : MonoBehaviour
         foreach (var reward in rewards)
         {
             current += reward.probability;
-            if (randomValue <= current)
-                return reward;
+            if (randomValue <= current) return reward;
         }
 
         return rewards[0];
-    }
-
-    // =========================
-    // SAVE SYSTEM
-    // =========================
-    private void RegisterReward(string rewardName)
-    {
-        string key = GACHA_KEY_PREFIX + rewardName;
-        int count = PlayerPrefs.GetInt(key, 0);
-        PlayerPrefs.SetInt(key, count + 1);
-        PlayerPrefs.Save();
-    }
-
-    public bool HasRewardAppeared(string rewardName)
-    {
-        return PlayerPrefs.GetInt(GACHA_KEY_PREFIX + rewardName, 0) > 0;
-    }
-
-    public void ResetGachaponData()
-    {
-        foreach (var reward in rewards)
-        {
-            PlayerPrefs.DeleteKey(GACHA_KEY_PREFIX + reward.rewardName);
-        }
-
-        PlayerPrefs.Save();
-        Debug.Log("Gachapon reseteado");
-    }
-
-    // =========================
-    // REWARD EXECUTION
-    // =========================
-    private void ExecuteReward(string reward)
-    {
-        if (HasRewardAppeared(reward))
-        {
-            Reward_Repetida();
-            return;
-        }
-
-        switch (reward)
-        {
-            case "Monedas":
-                Reward_Monedas();
-                break;
-
-            case "Vida":
-                Reward_Vida();
-                break;
-
-            case "Laser":
-                Reward_Laser();
-                break;
-
-            default:
-                Debug.Log("Recompensa sin función: " + reward);
-                break;
-        }
-
-        RegisterReward(reward);
-    }
-
-
-    // =========================
-    // REWARD FUNCTIONS
-    // =========================
-    private void Reward_Monedas()
-    {
-        Debug.Log("Gacha: Monedas");
-        CoinManager.Instance.AddCoins(100);
-    }
-
-    private void Reward_Vida()
-    {
-        Debug.Log("Gacha: Vida");
-    }
-
-    private void Reward_Laser()
-    {
-        Debug.Log("Gacha: Laser");
-    }
-
-    private void Reward_Repetida()
-    {
-        CoinManager _coinManager = FindFirstObjectByType<CoinManager>();
-        _coinManager.AddCoins(500);
-        Debug.Log("Gacha: Repetida");
-        // aquí tú decides qué hacer
     }
 }

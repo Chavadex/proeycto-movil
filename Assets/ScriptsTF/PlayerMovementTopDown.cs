@@ -16,13 +16,13 @@ public class PlayerMovementTopDown : MonoBehaviour
 
     void Update()
     {
-        // Leemos el joystick (input)
+
         input = joystick.Direction;
     }
 
     void FixedUpdate()
     {
-        // Movemos al player
+
         rb.linearVelocity = input * speed;
     }
 }

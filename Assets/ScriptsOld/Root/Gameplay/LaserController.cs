@@ -25,17 +25,16 @@ public class LaserController : MonoBehaviour
 
     void Start()
     {
-      //  PlayerPrefs.DeleteKey("no_ads");
 
         bool noAdsPurchased = PlayerPrefs.GetInt("no_ads", 0) == 1;
 
         if (noAdsPurchased)
         {
-            adsButton.SetActive(false); // Desactivar botón de ver ads
+            adsButton.SetActive(false);
         }
         else
         {
-            adsButton.SetActive(true); // Mostrar botón si NO han comprado
+            adsButton.SetActive(true);
         }
 
 

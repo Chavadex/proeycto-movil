@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 using static TowerAmmo;
 
@@ -9,38 +8,35 @@ public class PlayerAmmoInteraction : MonoBehaviour
     [SerializeField] private AmmoType carriedAmmoType;
     [SerializeField] private bool hasAmmo = false;
 
-    [Header("UI")]
+    [Header("UI References")]
     [SerializeField] private Image ammoIcon;
+
+    [Header("Ammo Sprites (Arrastra tus imágenes aquí)")]
+    [SerializeField] private Sprite redAmmoSprite;
+    [SerializeField] private Sprite blueAmmoSprite;
+    [SerializeField] private Sprite greenAmmoSprite; 
 
     private void Start()
     {
         UpdateAmmoUI();
     }
 
-    // ================= TRIGGERS =================
-
     private void OnTriggerEnter(Collider other)
     {
-        // -------- RECOGER MUNICIÓN --------
         if (other.CompareTag("AmmoSupplie"))
         {
-            Debug.Log("Recogiste ammo");
             PickAmmo(other);
         }
 
-        // -------- RECARGAR TORRETA --------
         if (other.CompareTag("Torreta"))
         {
-            Debug.Log("Torreta");
             ReloadTower(other);
         }
     }
 
-    // ================= LOGIC =================
-
     private void PickAmmo(Collider ammoSupply)
     {
-        if (hasAmmo) return; // No puede cargar más de una
+        if (hasAmmo) return; 
 
         AmmoSupply supply = ammoSupply.GetComponent<AmmoSupply>();
         if (supply == null) return;
@@ -65,8 +61,6 @@ public class PlayerAmmoInteraction : MonoBehaviour
         UpdateAmmoUI();
     }
 
-    // ================= UI =================
-
     private void UpdateAmmoUI()
     {
         if (ammoIcon == null) return;
@@ -75,16 +69,18 @@ public class PlayerAmmoInteraction : MonoBehaviour
 
         if (!hasAmmo) return;
 
+        ammoIcon.color = Color.white;
+
         switch (carriedAmmoType)
         {
             case AmmoType.Red:
-                ammoIcon.color = Color.red;
+                ammoIcon.sprite = redAmmoSprite;
                 break;
             case AmmoType.Blue:
-                ammoIcon.color = Color.blue;
+                ammoIcon.sprite = blueAmmoSprite;
                 break;
             case AmmoType.Green:
-                ammoIcon.color = Color.green;
+                ammoIcon.sprite = greenAmmoSprite;
                 break;
         }
     }
