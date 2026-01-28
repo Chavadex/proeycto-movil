@@ -7,7 +7,6 @@ public class MainMenuPresenter : MonoBehaviour
     [SerializeField] private MainMenuView uiView;
 
     [Header("Scene Configuration")]
-    [Tooltip("El nombre EXACTO de tu escena de juego")]
     [SerializeField] private string gameSceneName = "GameScene";
 
     private void Start()
@@ -23,11 +22,6 @@ public class MainMenuPresenter : MonoBehaviour
     public void OnPlayPressed()
     {
         SceneManager.LoadScene(gameSceneName);
-    }
-
-    public void OnSettingsPressed()
-    {
-        uiView.ShowSettings();
     }
 
     public void OnCreditsPressed()

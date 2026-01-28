@@ -16,20 +16,20 @@ public class ShopManager : MonoBehaviour
         switch (order.Info.PurchasedProductInfo[0].productId)
         {
             case "thousand_coins":
-                _coinManager.AddCoins(1000);
-                Debug.Log("Compraste mil monedas");
+                _coinManager.AddCoins(50);
+                Debug.Log("Compraste 50 monedas");
                 break;
             case "two_thousand_coins":
-                _coinManager.AddCoins(2000);
-                Debug.Log("Compraste 2 mil monedas");
+                _coinManager.AddCoins(100);
+                Debug.Log("Compraste 100 monedas");
                 break;
             case "three_thousand_coins":
-                _coinManager.AddCoins(3000);
-                Debug.Log("Compraste 3 mil monedas");
+                _coinManager.AddCoins(200);
+                Debug.Log("Compraste 200 monedas");
                 break;
             case "four_thousand_coins":
-                _coinManager.AddCoins(4000);
-                Debug.Log("Compraste 4 mil monedas");
+                _coinManager.AddCoins(500);
+                Debug.Log("Compraste 50 monedas");
                 break;
         }
     }

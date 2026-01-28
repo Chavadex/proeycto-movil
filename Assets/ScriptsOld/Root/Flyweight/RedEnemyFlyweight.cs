@@ -10,9 +10,6 @@ public class RedEnemyFlyweight : Flyweight
     private EnemyState _currentState;
     private Vector3 _moveDirection;
 
-    // Referencia opcional si quieres rotar solo el modelo y no el collider
-    // [SerializeField] private Transform modelVisuals; 
-
     private enum EnemyState
     {
         MoveUp,
@@ -33,7 +30,6 @@ public class RedEnemyFlyweight : Flyweight
         _enemyHealth.ResetHealth(_settings.MaxHealth);
         _enemyHealth.OnDeath += OnDeath;
 
-        // Aseguramos que empiece mirando a la derecha
         SetState(EnemyState.MoveRight);
 
         if (_cachedSpawner == null)
@@ -63,9 +59,6 @@ public class RedEnemyFlyweight : Flyweight
         transform.position += _moveDirection * _settings.Speed * Time.deltaTime;
     }
 
-    // ==========================================
-    // AQUÍ ESTÁ EL CAMBIO PARA LA ROTACIÓN
-    // ==========================================
     private void SetState(EnemyState newState)
     {
         _currentState = newState;
@@ -79,17 +72,13 @@ public class RedEnemyFlyweight : Flyweight
             _ => Vector3.zero
         };
 
-        // SI HAY MOVIMIENTO, ROTAMOS EL OBJETO
         if (_moveDirection != Vector3.zero)
         {
-            // Opción 1: Rotación Instantánea (Snappy)
             transform.rotation = Quaternion.LookRotation(_moveDirection);
 
-            // Opción 2: Rotación Suave (Si la prefieres, descomenta esta y comenta la de arriba)
-            // StartCoroutine(SmoothRotate(_moveDirection)); 
         }
     }
-    // ==========================================
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -105,8 +94,6 @@ public class RedEnemyFlyweight : Flyweight
 
     private void OnDeath()
     {
-        // Debug.Log("Evento OnDeath");
-
         if (_settings == null)
         {
             gameObject.SetActive(false);

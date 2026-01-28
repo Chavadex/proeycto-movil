@@ -19,15 +19,12 @@ public class EnemyHealth : MonoBehaviour
     [Header("References")]
     [SerializeField] private Renderer enemyRenderer;
 
-    // IMPORTANTE: Inicializamos en Blanco para que, si falla algo, 
-    // al menos se vea la textura y no se ponga negro.
     private Color _originalColor = Color.white;
 
     private Coroutine _flashCoroutine;
 
-    // IDs de las propiedades del Shader para hacerlo más rápido y seguro
-    private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor"); // URP
-    private static readonly int ColorID = Shader.PropertyToID("_Color");         // Standard
+    private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor"); 
+    private static readonly int ColorID = Shader.PropertyToID("_Color");        
 
     public bool IsDead { get; private set; }
     public event Action OnDeath;
@@ -39,17 +36,14 @@ public class EnemyHealth : MonoBehaviour
 
         if (enemyRenderer != null)
         {
-            // Intentamos obtener el color de URP primero (_BaseColor)
             if (enemyRenderer.material.HasProperty(BaseColorID))
             {
                 _originalColor = enemyRenderer.material.GetColor(BaseColorID);
             }
-            // Si no tiene _BaseColor, intentamos con el estándar (_Color)
             else if (enemyRenderer.material.HasProperty(ColorID))
             {
                 _originalColor = enemyRenderer.material.GetColor(ColorID);
             }
-            // Si no encuentra ninguno, se queda con el Color.white por defecto que pusimos arriba.
         }
     }
 
@@ -87,12 +81,10 @@ public class EnemyHealth : MonoBehaviour
 
     private IEnumerator FlashRoutine()
     {
-        // Aplicamos el color rojo
         SetMaterialColor(damageColor);
 
         yield return new WaitForSeconds(flashDuration);
 
-        // Regresamos al original
         ResetColor();
         _flashCoroutine = null;
     }
@@ -105,7 +97,6 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    // Función auxiliar para asignar color sin importar si es URP o Standard
     private void SetMaterialColor(Color color)
     {
         if (enemyRenderer == null) return;
@@ -133,7 +124,6 @@ public class EnemyHealth : MonoBehaviour
         currentHealth = maxHealth;
         IsDead = false;
 
-        // Al resetear la vida (cuando salen del pool), les devolvemos su color original
         ResetColor();
 
         UpdateHealthBar();

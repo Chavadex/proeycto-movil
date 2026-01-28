@@ -112,6 +112,6 @@ public class TowerAmmo : MonoBehaviour
         if (_currentStrategy != null)
             return _currentStrategy.RecoilStrength;
 
-        return 0.1f; // Valor por defecto
+        return 0.1f; 
     }
 }

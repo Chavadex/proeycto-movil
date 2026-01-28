@@ -5,7 +5,6 @@ public class MainMenuView : MonoBehaviour
 {
     [Header("Panels")]
     [SerializeField] private GameObject mainContainer;
-    [SerializeField] private GameObject settingsContainer;
     [SerializeField] private GameObject creditsContainer; 
 
     [Header("UI Elements")]
@@ -14,14 +13,7 @@ public class MainMenuView : MonoBehaviour
     public void ShowMainPanel()
     {
         mainContainer.SetActive(true);
-        settingsContainer.SetActive(false);
         if (creditsContainer) creditsContainer.SetActive(false);
-    }
-
-    public void ShowSettings()
-    {
-        mainContainer.SetActive(false);
-        settingsContainer.SetActive(true);
     }
 
     public void ShowCredits()

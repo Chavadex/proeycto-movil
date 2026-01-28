@@ -15,7 +15,7 @@ public class TowerAttackStrategySO : ScriptableObject, ITowerAttackStrategy
     [SerializeField] private ProjectileFlyweightSettings projectileSettings;
 
     [Header("Visual Feedback")]
-    [SerializeField] private float recoilStrength = 0.2f; // Fuerza del empujón (0.1 suave, 0.5 fuerte)
+    [SerializeField] private float recoilStrength = 0.2f;
 
     public float RecoilStrength => recoilStrength;
 
