@@ -12,20 +12,26 @@ public class MainMenuView : MonoBehaviour
 
     public void ShowMainPanel()
     {
-        mainContainer.SetActive(true);
-        if (creditsContainer) creditsContainer.SetActive(false);
+        if (mainContainer != null)
+            mainContainer.SetActive(true);
+        if (creditsContainer != null) 
+            creditsContainer.SetActive(false);
     }
 
     public void ShowCredits()
     {
-        mainContainer.SetActive(false);
-        if (creditsContainer) creditsContainer.SetActive(true);
+        if (mainContainer != null)
+            mainContainer.SetActive(false);
+        if (creditsContainer != null) 
+            creditsContainer.SetActive(true);
     }
 
     public void HideCredits()
     {
-        mainContainer.SetActive(true);
-        if (creditsContainer) creditsContainer.SetActive(false);
+        if (mainContainer != null)
+            mainContainer.SetActive(true);
+        if (creditsContainer != null) 
+            creditsContainer.SetActive(false);
     }
 
     public void UpdateCoinsText(int coins)

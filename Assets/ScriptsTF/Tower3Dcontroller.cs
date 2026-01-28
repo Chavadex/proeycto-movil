@@ -48,6 +48,8 @@ public class Tower3DController : MonoBehaviour
 
     private void RotateTowardsTarget(Transform target)
     {
+        if (turretHead == null || target == null) return;
+        
         Vector3 direction = target.position - turretHead.position;
         direction.y = 0f;
         Quaternion lookRotation = Quaternion.LookRotation(direction);
@@ -56,7 +58,8 @@ public class Tower3DController : MonoBehaviour
 
     private void Fire(Transform target)
     {
-        if (!towerAmmo.HasAmmo()) return;
+        if (towerAmmo == null || !towerAmmo.HasAmmo()) return;
+        if (firePoint == null || target == null) return;
 
         towerAmmo.Fire(firePoint, target);
 

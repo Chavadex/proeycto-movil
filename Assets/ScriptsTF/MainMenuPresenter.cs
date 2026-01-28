@@ -11,11 +11,39 @@ public class MainMenuPresenter : MonoBehaviour
 
     private void Start()
     {
-        uiView.ShowMainPanel();
-
-        if (CoinManager.Instance != null)
+        try
         {
-            uiView.UpdateCoinsText(CoinManager.Instance.Coins);
+            if (uiView != null)
+            {
+                uiView.ShowMainPanel();
+
+                // Intentar actualizar las monedas de forma segura
+                if (CoinManager.Instance != null)
+                {
+                    uiView.UpdateCoinsText(CoinManager.Instance.Coins);
+                }
+                else
+                {
+                    // Si CoinManager no existe, mostrar 0 como valor por defecto
+                    uiView.UpdateCoinsText(0);
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error en MainMenuPresenter.Start(): {e.Message}\n{e.StackTrace}");
+            // Intentar mostrar el panel principal de todas formas
+            if (uiView != null)
+            {
+                try
+                {
+                    uiView.ShowMainPanel();
+                }
+                catch (System.Exception e2)
+                {
+                    Debug.LogError($"Error crítico al mostrar MainPanel: {e2.Message}");
+                }
+            }
         }
     }
 
@@ -26,17 +54,20 @@ public class MainMenuPresenter : MonoBehaviour
 
     public void OnCreditsPressed()
     {
-        uiView.ShowCredits();
+        if (uiView != null)
+            uiView.ShowCredits();
     }
 
     public void OnCreditsHide()
     {
-        uiView.HideCredits();
+        if (uiView != null)
+            uiView.HideCredits();
     }
 
     public void OnBackToMainPressed()
     {
-        uiView.ShowMainPanel();
+        if (uiView != null)
+            uiView.ShowMainPanel();
     }
 
     public void OnQuitPressed()

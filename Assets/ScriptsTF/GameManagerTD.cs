@@ -27,7 +27,8 @@ public class GameManagerTD : MonoBehaviour
 
         Time.timeScale = 0;
 
-        uiView.TogglePauseUI(true);
+        if (uiView != null)
+            uiView.TogglePauseUI(true);
     }
 
     public void Resume()
@@ -36,8 +37,11 @@ public class GameManagerTD : MonoBehaviour
 
         Time.timeScale = 1;
 
-        uiView.TogglePauseUI(false);
-        uiView.HideAllPopups();
+        if (uiView != null)
+        {
+            uiView.TogglePauseUI(false);
+            uiView.HideAllPopups();
+        }
     }
 
     public void CheckIfFirstDead()
@@ -56,25 +60,27 @@ public class GameManagerTD : MonoBehaviour
     {
         _viewModel.SetDeadState(true);
 
-        uiView.ShowDefeatAds();
+        if (uiView != null)
+            uiView.ShowDefeatAds();
     }
 
     private void DefeatedNOADS()
     {
         Time.timeScale = 0;
 
-        uiView.ShowDefeatNoAds();
+        if (uiView != null)
+            uiView.ShowDefeatNoAds();
     }
 
 
-    public void OpenShop() => uiView.ShowShop(true);
-    public void BackFromShop() => uiView.ShowShop(false);
+    public void OpenShop() { if (uiView != null) uiView.ShowShop(true); }
+    public void BackFromShop() { if (uiView != null) uiView.ShowShop(false); }
 
-    public void OpenBoxShop() => uiView.ShowBoxShop(true);
-    public void BackFromBOXShop() => uiView.ShowBoxShop(false);
+    public void OpenBoxShop() { if (uiView != null) uiView.ShowBoxShop(true); }
+    public void BackFromBOXShop() { if (uiView != null) uiView.ShowBoxShop(false); }
 
-    public void OpenCoinsShop() => uiView.ShowCoinsShop(true);
-    public void BackFromCoinShop() => uiView.ShowCoinsShop(false);
+    public void OpenCoinsShop() { if (uiView != null) uiView.ShowCoinsShop(true); }
+    public void BackFromCoinShop() { if (uiView != null) uiView.ShowCoinsShop(false); }
 
 
     public void Retry()

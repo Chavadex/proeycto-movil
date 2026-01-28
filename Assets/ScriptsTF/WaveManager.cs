@@ -40,7 +40,11 @@ public class WaveManager : MonoBehaviour
         enemiesToSpawn = startingEnemies + (currentWave * enemiesIncrement);
         enemiesRemaining = enemiesToSpawn;
 
-        enemySpawner.StartSpawning(enemiesToSpawn);
+        if (enemySpawner != null)
+            enemySpawner.StartSpawning(enemiesToSpawn);
+        else
+            Debug.LogError("WaveManager: enemySpawner es null, no se pueden spawneer enemigos");
+        
         UpdateWaveUI();
 
         Debug.Log($"OLEADA {currentWave + 1} - Enemigos: {enemiesToSpawn}");
@@ -53,7 +57,8 @@ public class WaveManager : MonoBehaviour
         if (enemiesRemaining <= 0 && !isWaitingNextWave)
         {
             isWaitingNextWave = true;
-            enemySpawner.StopSpawning();
+            if (enemySpawner != null)
+                enemySpawner.StopSpawning();
             StartCoroutine(NextWaveRoutine());
         }
     }
@@ -101,10 +106,14 @@ public class WaveManager : MonoBehaviour
 
         isWaitingNextWave = true;
 
-        enemySpawner.StopSpawning();
-        enemySpawner.ClearEnemies();
+        if (enemySpawner != null)
+        {
+            enemySpawner.StopSpawning();
+            enemySpawner.ClearEnemies();
+        }
 
-        _gameManager.Resume();
+        if (_gameManager != null)
+            _gameManager.Resume();
 
         yield return new WaitForSecondsRealtime(timeBetweenWaves);
 
@@ -126,8 +135,11 @@ public class WaveManager : MonoBehaviour
         currentWave = 0;
         SaveWave();
 
-        enemySpawner.StopSpawning();
-        enemySpawner.ClearEnemies();
+        if (enemySpawner != null)
+        {
+            enemySpawner.StopSpawning();
+            enemySpawner.ClearEnemies();
+        }
 
         if (_castleHealth != null)
             _castleHealth.RestoreHealth();

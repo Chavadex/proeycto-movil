@@ -6,6 +6,11 @@ public class PowerUpManager : MonoBehaviour
 {
     public static PowerUpManager Instance;
 
+    [Header("Visual Effects")]
+    [SerializeField] private NukeVisualEffect nukeEffect;
+    [SerializeField] private TrailRenderer playerSpeedTrail;
+    [SerializeField] private ParticleSystem healParticles; // 1. ARRASTRA AQUI TU SISTEMA DE PARTICULAS DE CURACION
+
     [Header("UI References (Textos Contador)")]
     [SerializeField] private TextMeshProUGUI nukeCountText;
     [SerializeField] private TextMeshProUGUI speedCountText;
@@ -30,7 +35,7 @@ public class PowerUpManager : MonoBehaviour
 
     private ClickToMove _playerMovement;
     private CastleHealth _castleHealth;
-    private PlayerTouchKiller _playerTouchKiller; 
+    private PlayerTouchKiller _playerTouchKiller;
 
     private const string KEY_NUKE = "PWR_NUKE";
     private const string KEY_SPEED = "PWR_SPEED";
@@ -48,8 +53,10 @@ public class PowerUpManager : MonoBehaviour
         _castleHealth = FindFirstObjectByType<CastleHealth>();
         _playerTouchKiller = FindFirstObjectByType<PlayerTouchKiller>();
 
-        LoadInventory();
+        // Asegurar que las partículas empiecen apagadas
+        if (healParticles != null) healParticles.gameObject.SetActive(false);
 
+        LoadInventory();
         UpdateAllUI();
     }
 
@@ -62,6 +69,10 @@ public class PowerUpManager : MonoBehaviour
         nukeAmount--;
         SaveInventory();
         UpdateAllUI();
+        if (nukeEffect != null)
+        {
+            nukeEffect.PlayNukeEffect();
+        }
         Debug.Log("PowerUp: Nuke Activado. Restantes: " + nukeAmount);
     }
 
@@ -71,10 +82,20 @@ public class PowerUpManager : MonoBehaviour
         if (_playerMovement == null) return;
 
         StartCoroutine(SpeedRoutine());
-
+        StartCoroutine(SpeedRoutine2());
         speedAmount--;
-        SaveInventory(); 
+        SaveInventory();
         UpdateAllUI();
+    }
+
+    // Rutina visual del Speed (Trail)
+    private IEnumerator SpeedRoutine2()
+    {
+        if (playerSpeedTrail != null) playerSpeedTrail.emitting = true;
+
+        yield return new WaitForSeconds(speedDuration); // Usamos speedDuration para que coincida
+
+        if (playerSpeedTrail != null) playerSpeedTrail.emitting = false;
     }
 
     public void ActivateHeal()
@@ -84,9 +105,28 @@ public class PowerUpManager : MonoBehaviour
 
         _castleHealth.RestoreHealth();
 
+        // 2. ACTIVAMOS LA RUTINA VISUAL DE CURACION
+        if (healParticles != null)
+        {
+            StartCoroutine(HealVisualRoutine());
+        }
+
         healAmount--;
-        SaveInventory(); 
+        SaveInventory();
         UpdateAllUI();
+    }
+
+    // 3. CORRUTINA PARA ACTIVAR Y DESACTIVAR PARTICULAS DE HEAL
+    private IEnumerator HealVisualRoutine()
+    {
+        healParticles.gameObject.SetActive(true);
+        healParticles.Play();
+
+        // Esperamos lo que duren las partículas (ej. 2 segundos)
+        yield return new WaitForSeconds(2f);
+
+        healParticles.Stop();
+        healParticles.gameObject.SetActive(false);
     }
 
     public void ActivateInstaKill()
@@ -97,7 +137,7 @@ public class PowerUpManager : MonoBehaviour
         StartCoroutine(InstaKillRoutine());
 
         instaKillAmount--;
-        SaveInventory(); 
+        SaveInventory();
         UpdateAllUI();
     }
 
@@ -118,6 +158,11 @@ public class PowerUpManager : MonoBehaviour
 
     private void SaveInventory()
     {
+        if (GameRepository.Instance == null)
+        {
+            Debug.LogError("PowerUpManager: GameRepository.Instance es null, no se pueden guardar datos");
+            return;
+        }
         GameRepository.Instance.SavePowerUpCount(KEY_NUKE, nukeAmount);
         GameRepository.Instance.SavePowerUpCount(KEY_SPEED, speedAmount);
         GameRepository.Instance.SavePowerUpCount(KEY_HEAL, healAmount);
@@ -126,6 +171,15 @@ public class PowerUpManager : MonoBehaviour
 
     private void LoadInventory()
     {
+        if (GameRepository.Instance == null)
+        {
+            Debug.LogError("PowerUpManager: GameRepository.Instance es null, usando valores por defecto");
+            nukeAmount = defaultNukeAmount;
+            speedAmount = defaultSpeedAmount;
+            healAmount = defaultHealAmount;
+            instaKillAmount = defaultInstaKillAmount;
+            return;
+        }
         nukeAmount = GameRepository.Instance.LoadPowerUpCount(KEY_NUKE, defaultNukeAmount);
         speedAmount = GameRepository.Instance.LoadPowerUpCount(KEY_SPEED, defaultSpeedAmount);
         healAmount = GameRepository.Instance.LoadPowerUpCount(KEY_HEAL, defaultHealAmount);
@@ -151,11 +205,48 @@ public class PowerUpManager : MonoBehaviour
         _playerMovement.moveSpeed = originalSpeed;
     }
 
+    // 4. LOGICA DE DIOS (BLANCO) MODIFICADA
     private IEnumerator InstaKillRoutine()
     {
+        if (_playerTouchKiller == null) yield break;
+
         _playerTouchKiller.ToggleDeadlyMode(true);
+
+        // --- CAMBIO DE COLOR VISUAL ---
+        Renderer playerRenderer = _playerMovement.GetComponentInChildren<Renderer>(); // Buscamos el renderer del modelo
+        Color originalColor = Color.white;
+        Color originalEmission = Color.black;
+
+        if (playerRenderer != null)
+        {
+            // Guardamos color original
+            originalColor = playerRenderer.material.color;
+
+            // Intentamos guardar la emisión si el shader lo permite, si no, default negro
+            if (playerRenderer.material.HasProperty("_EmissionColor"))
+                originalEmission = playerRenderer.material.GetColor("_EmissionColor");
+
+            // PONEMOS MODO DIOS (Blanco brillante)
+            playerRenderer.material.color = Color.white;
+
+            // Activamos emisión para que brille
+            playerRenderer.material.EnableKeyword("_EMISSION");
+            playerRenderer.material.SetColor("_EmissionColor", new Color(0.8f, 0.8f, 0.8f)); // Un blanco brillante
+        }
+        // -----------------------------
+
         yield return new WaitForSeconds(instaKillDuration);
-        _playerTouchKiller.ToggleDeadlyMode(false);
+
+        // --- RESTAURAR COLOR VISUAL ---
+        if (playerRenderer != null)
+        {
+            playerRenderer.material.color = originalColor;
+            playerRenderer.material.SetColor("_EmissionColor", originalEmission);
+        }
+        // -----------------------------
+
+        if (_playerTouchKiller != null)
+            _playerTouchKiller.ToggleDeadlyMode(false);
     }
 
     public void UpdateAllUI()

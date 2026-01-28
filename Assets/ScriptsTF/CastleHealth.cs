@@ -115,13 +115,17 @@ public class CastleHealth : MonoBehaviour
         if (_GameManager != null)
             _GameManager.CheckIfFirstDead();
 
-        GetComponent<BoxCollider>().enabled = false;
+        BoxCollider collider = GetComponent<BoxCollider>();
+        if (collider != null)
+            collider.enabled = false;
     }
 
     public void RestoreHealth()
     {
         currentHealth = maxHealth;
-        GetComponent<BoxCollider>().enabled = true;
+        BoxCollider collider = GetComponent<BoxCollider>();
+        if (collider != null)
+            collider.enabled = true;
 
         transform.position = originalPosition;
 

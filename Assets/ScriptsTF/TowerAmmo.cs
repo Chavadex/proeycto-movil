@@ -50,6 +50,11 @@ public class TowerAmmo : MonoBehaviour
     public void Fire(Transform firePoint, Transform target)
     {
         if (currentAmmo <= 0) return;
+        if (_currentStrategy == null)
+        {
+            Debug.LogError("TowerAmmo: No hay estrategia actual asignada");
+            return;
+        }
 
         _currentStrategy.Fire(firePoint, target);
 
@@ -68,7 +73,7 @@ public class TowerAmmo : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"No se encontró estrategia para {newType}");
+            Debug.LogError($"No se encontr? estrategia para {newType}");
         }
     }
 
@@ -79,8 +84,8 @@ public class TowerAmmo : MonoBehaviour
     }
 
     public bool HasAmmo() => currentAmmo > 0;
-    public AmmoType GetAmmoType() => _currentStrategy.Type;
-    public AudioClip GetAmmoSound() => _currentStrategy.ShootSound;
+    public AmmoType GetAmmoType() => _currentStrategy != null ? _currentStrategy.Type : AmmoType.Red;
+    public AudioClip GetAmmoSound() => _currentStrategy != null ? _currentStrategy.ShootSound : null;
 
 
     private void ConsumeAmmo()
