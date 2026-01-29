@@ -18,6 +18,11 @@ public class WaveManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI waveText;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource bocina;
+    [SerializeField] private AudioClip finishedWave;
+    [SerializeField] private AudioClip kill;
+
     private int currentWave;
     private int enemiesToSpawn;
     private int enemiesRemaining;
@@ -53,6 +58,7 @@ public class WaveManager : MonoBehaviour
     public void OnEnemyKilled()
     {
         enemiesRemaining--;
+        bocina.PlayOneShot(kill);
 
         if (enemiesRemaining <= 0 && !isWaitingNextWave)
         {
@@ -60,6 +66,7 @@ public class WaveManager : MonoBehaviour
             if (enemySpawner != null)
                 enemySpawner.StopSpawning();
             StartCoroutine(NextWaveRoutine());
+            bocina.PlayOneShot(finishedWave);
         }
     }
 

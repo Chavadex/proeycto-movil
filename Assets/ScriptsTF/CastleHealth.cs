@@ -18,6 +18,10 @@ public class CastleHealth : MonoBehaviour
     [SerializeField] private float shakeDuration = 0.15f;
     [SerializeField] private float shakeMagnitude = 0.15f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource bocina;
+    [SerializeField] private AudioClip sinSalud;
+
     private Vector3 originalPosition;
     private Coroutine shakeCoroutine;
     private float currentShakeTimer = 0f;
@@ -111,6 +115,8 @@ public class CastleHealth : MonoBehaviour
     private void OnCastleDestroyed()
     {
         Debug.Log("El castillo fue destruido ");
+
+        bocina.PlayOneShot(sinSalud);
 
         if (_GameManager != null)
             _GameManager.CheckIfFirstDead();

@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TowerAttackStrategySO
   ammoType: 2
   ammoSprite: {fileID: -1759813907, guid: 6036e3a2c29e62446bc9b282dbf55a2e, type: 3}
-  shootSound: {fileID: 8300000, guid: 5af4c12c36eb31b448d68cb95be74a21, type: 3}
+  shootSound: {fileID: 8300000, guid: 65a1986fb1da92a4fa7651b43cbe312d, type: 3}
   projectileSettings: {fileID: 11400000, guid: 1e360997876fa0d468b62d6e2ae1fdb0, type: 2}
   recoilStrength: 0.5

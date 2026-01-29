@@ -33,6 +33,13 @@ public class PowerUpManager : MonoBehaviour
     [SerializeField] private float speedDuration = 20f;
     [SerializeField] private float instaKillDuration = 10f;
 
+    [Header("Audios")]
+    [SerializeField] private AudioSource bocina;
+    [SerializeField] private AudioClip healing;
+    [SerializeField] private AudioClip nuke;
+    [SerializeField] private AudioClip instaKill;
+    [SerializeField] private AudioClip speedUp;
+
     private ClickToMove _playerMovement;
     private CastleHealth _castleHealth;
     private PlayerTouchKiller _playerTouchKiller;
@@ -65,6 +72,7 @@ public class PowerUpManager : MonoBehaviour
         if (nukeAmount <= 0) return;
 
         FlyweightFactory.NukeEnemies();
+        bocina.PlayOneShot(nuke);
 
         nukeAmount--;
         SaveInventory();
@@ -83,6 +91,7 @@ public class PowerUpManager : MonoBehaviour
 
         StartCoroutine(SpeedRoutine());
         StartCoroutine(SpeedRoutine2());
+        bocina.PlayOneShot(speedUp);
         speedAmount--;
         SaveInventory();
         UpdateAllUI();
@@ -104,6 +113,7 @@ public class PowerUpManager : MonoBehaviour
         if (_castleHealth == null) return;
 
         _castleHealth.RestoreHealth();
+        bocina.PlayOneShot(healing);
 
         // 2. ACTIVAMOS LA RUTINA VISUAL DE CURACION
         if (healParticles != null)
@@ -135,6 +145,7 @@ public class PowerUpManager : MonoBehaviour
         if (_playerTouchKiller == null) return;
 
         StartCoroutine(InstaKillRoutine());
+        bocina.PlayOneShot(instaKill);
 
         instaKillAmount--;
         SaveInventory();
